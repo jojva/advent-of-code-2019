@@ -1,14 +1,29 @@
-use std::fs::File;
-use std::io::{prelude::*, BufReader};
+use std::io::{self, Read, Write};
 
-fn main() {
-    let file = File::open("data/input.txt").unwrap();
-    let reader = BufReader::new(file);
-    let mut total_fuel = 0;
-    for line in reader.lines() {
-        total_fuel += fuel_from_mass(line.unwrap().parse::<u32>().unwrap());
+type Result<T> = ::std::result::Result<T, Box<dyn ::std::error::Error>>;
+
+fn main() -> Result<()> {
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input)?;
+
+    part1(&input)?;
+    part2(&input)?;
+    Ok(())
+}
+
+fn part1(input: &str) -> Result<()> {
+    let mut fuel = 0;
+    for line in input.lines() {
+        let mass: u32 = line.parse()?;
+        fuel += fuel_from_mass(mass);
     }
-    println!("{}", total_fuel);
+    writeln!(io::stdout(), "{}", fuel)?;
+    Ok(())
+}
+
+fn part2(_input: &str) -> Result<()> {
+    // TODO
+    Ok(())
 }
 
 fn fuel_from_mass(mass: u32) -> u32 {
