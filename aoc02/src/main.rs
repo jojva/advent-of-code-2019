@@ -17,12 +17,31 @@ fn part1(input: &str) -> Result<()> {
         .split(',')
         .map(|v| v.parse().unwrap())
         .collect();
+    values[1] = 12;
+    values[2] = 2;
     run_intcode(&mut values);
     writeln!(io::stdout(), "{}", values[0])?;
     Ok(())
 }
 
-fn part2(_input: &str) -> Result<()> {
+fn part2(input: &str) -> Result<()> {
+    let values: Vec<usize> = input
+        .trim()
+        .split(',')
+        .map(|v| v.parse().unwrap())
+        .collect();
+    for noun in 0..99 {
+        for verb in 0..99 {
+            let mut values_copy = values.clone();
+            values_copy[1] = noun;
+            values_copy[2] = verb;
+            run_intcode(&mut values_copy);
+            if values_copy[0] == 19_690_720 {
+                writeln!(io::stdout(), "noun: {}, verb: {}", noun, verb)?;
+                break;
+            }
+        }
+    }
     Ok(())
 }
 
