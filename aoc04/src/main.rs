@@ -35,16 +35,32 @@ fn part2(_input: &str) -> Result<()> {
 
 fn is_password(number: u32) -> bool {
     let digits = number.to_string().chars().collect::<Vec<char>>();
-    let mut found_adjacent = false;
+    let mut found_pair = false;
     for digit_pair in digits.windows(2) {
         if digit_pair[0] > digit_pair[1] {
             return false;
         }
         if digit_pair[0] == digit_pair[1] {
-            found_adjacent = true;
+            found_pair = true;
         }
     }
-    found_adjacent
+    found_pair
+}
+
+fn is_actually_password(number: u32) -> bool {
+    let digits = number.to_string().chars().collect::<Vec<char>>();
+    let mut prev_pair = ('0', '0');
+    let mut found_pure_pair = false;
+    for digit_pair in digits.windows(2) {
+        let curr_pair = (digit_pair[0], digit_pair[1]);
+        if curr_pair.0 > curr_pair.1 {
+            return false;
+        }
+        if curr_pair.0 == curr_pair.1 && curr_pair != prev_pair {
+            found_pure_pair = true;
+        }
+    }
+    found_pure_pair
 }
 
 #[cfg(test)]
@@ -56,5 +72,13 @@ mod tests {
         assert_eq!(is_password(100000), false);
         assert_eq!(is_password(123456), false);
         assert_eq!(is_password(123345), true);
+    }
+
+    #[test]
+    fn test_is_actually_password() {
+        assert_eq!(is_actually_password(112233), true);
+        assert_eq!(is_actually_password(123444), false);
+        assert_eq!(is_actually_password(111122), true);
+        assert_eq!(is_actually_password(113444), true);
     }
 }
