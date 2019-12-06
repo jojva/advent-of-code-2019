@@ -29,38 +29,64 @@ fn part1(input: &str) -> Result<()> {
     Ok(())
 }
 
-fn part2(_input: &str) -> Result<()> {
+fn part2(input: &str) -> Result<()> {
+    let range: Vec<u32> = input
+        .trim()
+        .split('-')
+        .map(|v| v.parse().unwrap())
+        .collect();
+    let min = range[0];
+    let max = range[1];
+    let mut passwords = 0;
+    for number in min..=max {
+        if is_actually_password(number) {
+            passwords += 1;
+        }
+    }
+    writeln!(io::stdout(), "{}", passwords)?;
     Ok(())
 }
 
 fn is_password(number: u32) -> bool {
-    let digits = number.to_string().chars().collect::<Vec<char>>();
-    let mut found_pair = false;
-    for digit_pair in digits.windows(2) {
-        if digit_pair[0] > digit_pair[1] {
+    let digits = [
+        (number / 100_000) % 10,
+        (number / 10_000) % 10,
+        (number / 1_000) % 10,
+        (number / 100) % 10,
+        (number / 10) % 10,
+        (number / 1) % 10,
+    ];
+    let mut occurrences: [u32; 10] = [0; 10];
+    let mut last_digit = 0;
+    for &current_digit in &digits {
+        if last_digit > current_digit {
             return false;
         }
-        if digit_pair[0] == digit_pair[1] {
-            found_pair = true;
-        }
+        occurrences[current_digit as usize] += 1;
+        last_digit = current_digit;
     }
-    found_pair
+    occurrences.iter().any(|x| x >= &2)
 }
 
 fn is_actually_password(number: u32) -> bool {
-    let digits = number.to_string().chars().collect::<Vec<char>>();
-    let mut prev_pair = ('0', '0');
-    let mut found_pure_pair = false;
-    for digit_pair in digits.windows(2) {
-        let curr_pair = (digit_pair[0], digit_pair[1]);
-        if curr_pair.0 > curr_pair.1 {
+    let digits = [
+        (number / 100_000) % 10,
+        (number / 10_000) % 10,
+        (number / 1_000) % 10,
+        (number / 100) % 10,
+        (number / 10) % 10,
+        (number / 1) % 10,
+    ];
+    let mut occurrences: [u32; 10] = [0; 10];
+    let mut last_digit = 0;
+    for &current_digit in &digits {
+        if last_digit > current_digit {
             return false;
         }
-        if curr_pair.0 == curr_pair.1 && curr_pair != prev_pair {
-            found_pure_pair = true;
-        }
+        occurrences[current_digit as usize] += 1;
+        last_digit = current_digit;
     }
-    found_pure_pair
+    occurrences.iter().any(|x| x == &2)
 }
 
 #[cfg(test)]
